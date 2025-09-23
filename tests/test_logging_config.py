@@ -1,5 +1,8 @@
 from __future__ import annotations
-import importlib, logging, os
+
+import importlib
+import logging
+
 
 def test_setup_otel_logging_idempotent(monkeypatch):
     monkeypatch.setenv("OTEL_ENABLED", "true")

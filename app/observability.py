@@ -19,12 +19,10 @@ def setup_otel_logging() -> None:
 
     # Leniwy import OTel dopiero, gdy feature flag włączony
     try:
-        # isort: off  # ruff I001 – nie sortować i nie przenosić tych importów
-        from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
-        from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider
-        from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-        from opentelemetry.sdk.resources import Resource, SERVICE_NAME
-        # isort: on
+        from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter  # noqa: I001
+        from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider  # noqa: I001
+        from opentelemetry.sdk._logs.export import BatchLogRecordProcessor  # noqa: I001
+        from opentelemetry.sdk.resources import Resource, SERVICE_NAME  # noqa: I001
     except Exception:  # brak paczek albo inny runtime issue -> po prostu wyjdź
         return
 
