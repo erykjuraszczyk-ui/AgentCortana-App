@@ -1,7 +1,11 @@
-import pytest
+from __future__ import annotations
+
 import httpx
+import pytest
 from httpx import ASGITransport
+
 from app.app import app
+
 
 @pytest.mark.asyncio
 async def test_health_ok():
@@ -10,6 +14,7 @@ async def test_health_ok():
         r = await ac.get("/health")
     assert r.status_code == 200
     assert r.json() == {"status": "ok"}
+
 
 @pytest.mark.asyncio
 async def test_version_shape():
