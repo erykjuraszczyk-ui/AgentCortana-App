@@ -4,7 +4,6 @@ import os
 import sys
 from typing import Any
 
-
 __version__ = os.getenv("AGENTCORTANA_APP_VERSION", "0.1.0")
 
 
