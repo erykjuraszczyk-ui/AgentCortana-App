@@ -1,4 +1,5 @@
 from __future__ import annotations
+from app.routers.act import router as act_router
 
 from fastapi import FastAPI
 
@@ -16,6 +17,7 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
     )
 
+app.include_router(act_router)
     # Observability
     setup_otel_logging()
 
