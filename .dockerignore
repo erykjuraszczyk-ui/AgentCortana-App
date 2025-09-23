@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.env*
+.venv
+.git
+.gitignore
+tests
+htmlcov
+coverage.xml
+dist
+build
+.vscode
+.idea
