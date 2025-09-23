@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+
 from .routers.health import router as health_router
 from .version import __version__, build_meta
 
