@@ -15,6 +15,8 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_router)
+    from .routers.introspect import router as introspect_router
+    app.include_router(introspect_router)
 
     @app.get("/version", tags=["meta"], summary="Service version & build metadata")
     async def version() -> dict[str, str]:
