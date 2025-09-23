@@ -1,7 +1,11 @@
 from __future__ import annotations
-import httpx, pytest
+
+import httpx
+import pytest
 from httpx import ASGITransport
+
 from app.app import app
+
 
 @pytest.mark.asyncio
 async def test_introspect_ok():

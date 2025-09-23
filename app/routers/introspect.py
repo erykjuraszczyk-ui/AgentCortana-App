@@ -4,7 +4,9 @@ import os
 import platform
 from importlib import metadata
 from typing import Any
+
 from fastapi import APIRouter
+
 from ..version import __version__, build_meta
 
 router = APIRouter(tags=["meta"])
@@ -12,12 +14,14 @@ router = APIRouter(tags=["meta"])
 ALLOWED_ENV_PREFIXES = ("CORTANA_", "OTEL_", "APP_ENV", "ENV", "DEPLOYMENT_ENV")
 CORE_PACKAGES = ("fastapi", "uvicorn", "pydantic", "httpx")
 
+
 def _filtered_env() -> dict[str, str]:
     out: dict[str, str] = {}
     for k, v in os.environ.items():
         if k.startswith(ALLOWED_ENV_PREFIXES) or k in ALLOWED_ENV_PREFIXES:
             out[k] = v
     return out
+
 
 def _pkg_versions() -> dict[str, str]:
     versions: dict[str, str] = {}
@@ -27,6 +31,7 @@ def _pkg_versions() -> dict[str, str]:
         except metadata.PackageNotFoundError:
             pass
     return versions
+
 
 @router.get("/introspect", summary="Runtime/build/env information (safe)")
 async def introspect() -> dict[str, Any]:
