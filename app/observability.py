@@ -4,26 +4,26 @@ import logging
 import os
 from typing import Final
 
-# Leniwy import OTel; kolejność w bloku try uporządkowana pod ruff/isort
-try:
-    from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
-    from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider
-    from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-    from opentelemetry.sdk.resources import Resource, SERVICE_NAME
-    _OTEL_AVAILABLE = True
-except Exception:  # pragma: no cover
-    _OTEL_AVAILABLE = False
-
 
 def setup_otel_logging() -> None:
     """
     Configure OpenTelemetry logging if:
       - OTEL_ENABLED is true-ish
       - OTel packages are available
+
     Idempotent: wielokrotne wywołania nie powinny dublować handlerów konsolowych.
     """
     enabled = os.getenv("OTEL_ENABLED", "false").lower() in {"1", "true", "yes"}
-    if not enabled or not _OTEL_AVAILABLE:
+    if not enabled:
+        return
+
+    # Leniwy import OTel dopiero, gdy feature flag włączony
+    try:
+        from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
+        from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider
+        from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+        from opentelemetry.sdk.resources import Resource, SERVICE_NAME
+    except Exception:  # brak paczek albo inny runtime issue -> po prostu wyjdź
         return
 
     service: Final[str] = os.getenv("OTEL_SERVICE_NAME", "AgentCortana-App")
