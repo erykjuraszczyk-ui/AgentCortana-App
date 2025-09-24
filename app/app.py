@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI
 
 from app.routers.act import router as act_router
@@ -19,8 +21,8 @@ def create_app() -> FastAPI:
     )
 
     # Observability
-    setup_otel_logging()
-
+    if os.getenv("OTEL_ENABLED") == "1":
+        setup_otel_logging()
     # Routers
     app.include_router(act_router)
     app.include_router(health_router)
