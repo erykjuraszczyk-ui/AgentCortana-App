@@ -14,3 +14,7 @@ build/
 .idea/
 .DS_Store
 .env.local
+
+# Local backups (nie commitujemy)
+backups/
+*.tar.gz
