@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 
 router = APIRouter(tags=["act"])
 
+MAX_INPUT_LEN = 2000
+
 
 class ActRequest(BaseModel):
     input: str = Field(..., description="User input")
@@ -31,6 +33,8 @@ class ActResponse(BaseModel):
 async def act(req: ActRequest) -> ActResponse:
     if not req.input.strip():
         raise HTTPException(status_code=400, detail="input cannot be empty")
+    if len(req.input) > MAX_INPUT_LEN:
+        raise HTTPException(status_code=413, detail=f"input too long; max {MAX_INPUT_LEN}")
     status: Literal["accepted", "unsupported"] = "accepted" if req.mode == "sync" else "unsupported"
     return ActResponse(status=status, echo=Echo(input=req.input, mode=req.mode))
 
@@ -38,16 +42,13 @@ async def act(req: ActRequest) -> ActResponse:
 # --- STREAMING (SSE) EXPERIMENTAL -------------------------------------------
 @router.post("/act/stream", summary="Agent action (SSE stream, experimental)")
 async def act_stream(req: ActRequest):
-    """
-    Server-Sent Events (SSE) stub. Enable with EXPERIMENTAL_ACT_STREAM=1.
-    """
+    """Server-Sent Events (SSE) stub. Enable with EXPERIMENTAL_ACT_STREAM=1."""
     if os.getenv("EXPERIMENTAL_ACT_STREAM") != "1":
-        raise HTTPException(
-            status_code=501, detail="stream disabled; set EXPERIMENTAL_ACT_STREAM=1"
-        )
-
+        raise HTTPException(status_code=501, detail="stream disabled")
     if not req.input.strip():
         raise HTTPException(status_code=400, detail="input cannot be empty")
+    if len(req.input) > MAX_INPUT_LEN:
+        raise HTTPException(status_code=413, detail=f"input too long; max {MAX_INPUT_LEN}")
 
     async def event_gen():
         for i in range(5):
