@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install deps and run tests
         run: |
           set -e
@@ -42,13 +41,11 @@ jobs:
         with:
           driver: docker-container
           install: true
-
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -58,11 +55,10 @@ jobs:
             type=semver,pattern={{version}}
             type=ref,event=branch
             type=raw,value=latest,enable={{is_default_branch}}
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./agent-local/agent_app
+          context: .
           file: ./agent-local/agent_app/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
