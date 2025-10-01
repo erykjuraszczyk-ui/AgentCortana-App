@@ -39,7 +39,10 @@ async def introspect() -> dict[str, Any]:
         "service": "AgentCortana-App",
         "version": __version__,
         "build": build_meta(),
-        "runtime": {"python": platform.python_version(), "platform": platform.platform()},
+        "runtime": {
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+        },
         "env": _filtered_env(),
         "packages": _pkg_versions(),
     }

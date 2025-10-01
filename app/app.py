@@ -7,9 +7,9 @@ from fastapi import FastAPI
 from app.routers.act import router as act_router
 
 from .observability import setup_otel_logging
+from .routers.act import router as act_router
 from .routers.health import router as health_router
 from .routers.introspect import router as introspect_router
-from .routers.act import router as act_router
 from .version import __version__, build_meta
 
 

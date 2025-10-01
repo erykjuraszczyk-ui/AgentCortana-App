@@ -1,7 +1,11 @@
 from __future__ import annotations
-import httpx, pytest
+
+import httpx
+import pytest
 from httpx import ASGITransport
+
 from app.app import app
+
 
 @pytest.mark.asyncio
 async def test_act_stub_accepts():
@@ -12,6 +16,7 @@ async def test_act_stub_accepts():
     body = r.json()
     assert body["status"] == "accepted"
     assert body["echo"]["input"] == "hello"
+
 
 @pytest.mark.asyncio
 async def test_act_stub_rejects_empty():

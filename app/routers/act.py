@@ -1,18 +1,23 @@
 from __future__ import annotations
-from typing import Any, Literal, Optional
+
+from typing import Any, Literal
+
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel, Field
 
 router = APIRouter(tags=["act"])
 
+
 class ActRequest(BaseModel):
     input: str = Field(..., description="User input")
-    mode: Optional[Literal["sync", "stream"]] = "sync"
+    mode: Literal["sync", "stream"] | None = "sync"
+
 
 class ActResponse(BaseModel):
     status: Literal["accepted", "unsupported"]
     message: str
     echo: dict[str, Any] | None = None
+
 
 @router.post("/act", response_model=ActResponse, summary="Agent action (stub)")
 async def act(req: ActRequest = Body(...)) -> ActResponse:
@@ -21,8 +26,11 @@ async def act(req: ActRequest = Body(...)) -> ActResponse:
     return ActResponse(status="accepted", message="Stub only", echo=req.model_dump())
 
 
-import os, json
+import json
+import os
+
 from starlette.responses import StreamingResponse
+
 
 @router.post("/act/stream", summary="Agent action stream (stub)")
 async def act_stream(req: ActRequest = Body(...)):
@@ -37,7 +45,11 @@ async def act_stream(req: ActRequest = Body(...)):
 
     async def gen():
         # minimalny pojedynczy event SSE
-        payload = {"status": "accepted", "message": "Stub only (stream)", "echo": req.model_dump()}
+        payload = {
+            "status": "accepted",
+            "message": "Stub only (stream)",
+            "echo": req.model_dump(),
+        }
         yield "data: " + json.dumps(payload) + "\n\n"
 
     return StreamingResponse(gen(), media_type="text/event-stream")
