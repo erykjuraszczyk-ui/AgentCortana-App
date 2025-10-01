@@ -30,14 +30,13 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install -U pip setuptools wheel
-          # opcjonalne pliki wymagań, jeśli istnieją
-          if [ -f agent-local/requirements-test.txt ]; then pip install -r agent-local/requirements-test.txt; fi
-          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-          if [ -f agent-local/requirements.txt ]; then pip install -r agent-local/requirements.txt; fi
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # twardy fallback pakietów potrzebnych do testów
+          # opcjonalne requirements-y, jeśli istnieją
+          [ -f agent-local/requirements-test.txt ] && pip install -r agent-local/requirements-test.txt || true
+          [ -f requirements-test.txt ] && pip install -r requirements-test.txt || true
+          [ -f agent-local/requirements.txt ] && pip install -r agent-local/requirements.txt || true
+          [ -f requirements.txt ] && pip install -r requirements.txt || true
+          # twardy fallback
           pip install pytest pytest-asyncio anyio httpx fastapi starlette uvicorn pydantic
-          echo "==== pip freeze (head) ===="; pip freeze | sed -n '1,120p'
           PYTHONPATH=agent-local pytest -q
 
       # ---- BUILD & PUSH ----
