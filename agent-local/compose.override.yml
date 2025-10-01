@@ -1,0 +1,12 @@
+services:
+  app:
+    # publikuj port kontenera 8000 na hosta (z .env: APP_BIND/APP_PORT)
+    ports:
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8000}:8000"
+    # healthcheck bez zależności od curl/wget (Python socket)
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket,sys; s=socket.socket(); s.settimeout(2); s.connect(('localhost',8000)); s.close(); sys.exit(0)\""]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 10s

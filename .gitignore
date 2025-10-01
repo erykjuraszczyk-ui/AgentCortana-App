@@ -13,3 +13,5 @@ build/
 .vscode/
 .idea/
 .DS_Store
+/agent-local/data/
+/agent-local/agent_app/
