@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentcortana_app"
+version = "0.0.0"
+description = "AgentCortana App"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+# extras: pip install -e ".[test]"
+[project.optional-dependencies]
+test = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}  # jeśli masz układ src/
+[tool.setuptools.packages.find]
+where = ["src"]
