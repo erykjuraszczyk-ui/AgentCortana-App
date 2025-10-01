@@ -19,3 +19,25 @@ async def act(req: ActRequest = Body(...)) -> ActResponse:
     if not req.input.strip():
         raise HTTPException(status_code=400, detail="input cannot be empty")
     return ActResponse(status="accepted", message="Stub only", echo=req.model_dump())
+
+
+import os, json
+from starlette.responses import StreamingResponse
+
+@router.post("/act/stream", summary="Agent action stream (stub)")
+async def act_stream(req: ActRequest = Body(...)):
+    # walidacja wejścia
+    if not req.input.strip():
+        raise HTTPException(status_code=400, detail="input cannot be empty")
+
+    # feature flag: EXPERIMENTAL_ACT_STREAM
+    flag = os.getenv("EXPERIMENTAL_ACT_STREAM", "")
+    if str(flag).lower() not in {"1", "true", "yes", "on"}:
+        raise HTTPException(status_code=501, detail="streaming not enabled")
+
+    async def gen():
+        # minimalny pojedynczy event SSE
+        payload = {"status": "accepted", "message": "Stub only (stream)", "echo": req.model_dump()}
+        yield "data: " + json.dumps(payload) + "\n\n"
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
