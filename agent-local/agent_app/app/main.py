@@ -1,8 +1,7 @@
-from fastapi import FastAPI
 # imports na górze pliku
 from typing import Any  # zamiast Dict
 
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 # ... reszta importów ...
@@ -70,6 +69,8 @@ class RememberReq(BaseModel):
 class ActReq(BaseModel):
     # … (jak było)
     pass
+
+
 app = FastAPI()
 
 
@@ -98,6 +99,8 @@ def health():
     except Exception as e:
         st["minio"] = f"err:{e}"
     return {"status": st}
+
+
 @app.post("/remember")
 def remember(req: RememberReq) -> dict[str, Any]:
     m = _minio_client()
@@ -115,7 +118,6 @@ import uuid
 from typing import Any
 
 import requests
-
 from minio import Minio
 from minio.error import S3Error
 from pydantic import BaseModel
@@ -224,8 +226,6 @@ def chat(messages, temperature=0.2, max_tokens=512):
     return r.json()["choices"][0]["message"]["content"]
 
 
-
-
 class RememberReq(BaseModel):
     text: str
     metadata: dict[str, Any] = {}
@@ -262,8 +262,6 @@ def health():
         st["minio"] = "ok"
     except Exception as e:
         st["minio"] = f"err:{e}"
-
-
 
 
 def remember(req: RememberReq):

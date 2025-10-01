@@ -1,17 +1,24 @@
-import os, json, time, uuid
-from typing import Optional, Any, Dict, Iterable
+import json
+import os
+import time
+import uuid
+from collections.abc import Iterable
+from datetime import UTC, datetime
+from typing import Any
+
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from datetime import datetime, timezone
 
 router = APIRouter()
 
-def _extract_text(payload: Dict[str, Any]) -> Optional[str]:
+
+def _extract_text(payload: dict[str, Any]) -> str | None:
     for key in ("input", "prompt", "text", "message"):
         v = payload.get(key)
         if isinstance(v, str) and v.strip():
             return v.strip()
     return None
+
 
 @router.post("/act")
 async def act(request: Request):
@@ -24,7 +31,7 @@ async def act(request: Request):
     if not text:
         raise HTTPException(status_code=400, detail="empty request")
     ts = int(time.time())
-    accepted_at = datetime.now(timezone.utc).isoformat()
+    accepted_at = datetime.now(UTC).isoformat()
     return {
         "status": "accepted",
         "task_id": str(uuid.uuid4()),
@@ -32,6 +39,7 @@ async def act(request: Request):
         "accepted_at": accepted_at,
         "echo": {"input": text},
     }
+
 
 @router.post("/act/stream")
 async def act_stream(request: Request):
@@ -52,7 +60,7 @@ async def act_stream(request: Request):
             {"event": "end", "ts": t0 + 1},
         ]
         for e in events:
-            yield f"data: {json.dumps(e)}\n\n".encode("utf-8")
+            yield f"data: {json.dumps(e)}\n\n".encode()
             time.sleep(0.01)
 
     headers = {

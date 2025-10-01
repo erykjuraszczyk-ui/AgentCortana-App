@@ -1,4 +1,6 @@
-import os, sys
+import os
+import sys
+
 from fastapi import APIRouter
 
 # bezpieczny odczyt wersji pakietów
@@ -9,9 +11,11 @@ except Exception:  # python<3.8 fallback (niepotrzebny tu, ale zostawmy defensyw
 
 router = APIRouter()
 
+
 @router.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @router.get("/version")
 def version():
@@ -19,6 +23,7 @@ def version():
     build = {"git_sha": os.getenv("GIT_SHA", ""), "image": os.getenv("IMAGE", "")}
     py = sys.version.split()[0]
     return {"version": ver, "python": py, "build": build}
+
 
 def _collect_packages():
     wanted = ["fastapi", "starlette", "uvicorn", "httpx", "pydantic", "pytest"]
@@ -31,6 +36,7 @@ def _collect_packages():
         except Exception:
             pass
     return packages
+
 
 @router.get("/introspect")
 def introspect():

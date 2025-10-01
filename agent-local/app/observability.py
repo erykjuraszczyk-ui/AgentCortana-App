@@ -2,6 +2,7 @@ import logging
 
 _CONFIGURED = False
 
+
 def setup_otel_logging(service_name: str = "agentcortana", level: int = logging.INFO):
     """Idempotentne ustawienie logowania (test oczekuje idempotencji)."""
     global _CONFIGURED
