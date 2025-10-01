@@ -1,38 +1,17 @@
-from __future__ import annotations
+import sys
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 
-import os
+ROOT = Path(__file__).resolve().parents[1]
+MAIN = ROOT / "agent-local" / "agent_app" / "app" / "main.py"
+if not MAIN.exists():
+    raise ImportError(f"Cannot find FastAPI app file at {MAIN}")
 
-from fastapi import FastAPI
+spec = spec_from_file_location("agent_local_app_main", str(MAIN))
+if spec is None or spec.loader is None:
+    raise ImportError("Failed to create module spec for local agent app")
 
-from app.routers.act import router as act_router
-
-from .observability import setup_otel_logging
-from .routers.health import router as health_router
-from .routers.introspect import router as introspect_router
-from .version import __version__, build_meta
-
-
-def create_app() -> FastAPI:
-    app = FastAPI(
-        title="AgentCortana-App",
-        version=__version__,
-        docs_url="/docs",
-        redoc_url="/redoc",
-    )
-
-    # Observability
-    if os.getenv("OTEL_ENABLED") == "1":
-        setup_otel_logging()
-    # Routers
-    app.include_router(act_router)
-    app.include_router(health_router)
-    app.include_router(introspect_router)
-
-    @app.get("/version", tags=["meta"], summary="Service version & build metadata")
-    async def version() -> dict[str, str]:
-        return {"version": __version__, **build_meta()}
-
-    return app
-
-
-app = create_app()
+module = module_from_spec(spec)
+sys.modules["agent_local_app_main"] = module
+spec.loader.exec_module(module)  # type: ignore[attr-defined]
+app = module.app
