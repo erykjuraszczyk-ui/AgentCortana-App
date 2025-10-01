@@ -31,7 +31,9 @@ class ActResponse(BaseModel):
 async def act(req: ActRequest) -> ActResponse:
     if not req.input.strip():
         raise HTTPException(status_code=400, detail="input cannot be empty")
-    status: Literal["accepted", "unsupported"] = "accepted" if req.mode == "sync" else "unsupported"
+    status: Literal["accepted", "unsupported"] = (
+        "accepted" if req.mode == "sync" else "unsupported"
+    )
     return ActResponse(status=status, echo=Echo(input=req.input, mode=req.mode))
 
 

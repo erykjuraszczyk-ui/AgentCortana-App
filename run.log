@@ -1,0 +1,52 @@
++ trap 'echo; echo "📜 Log: $(pwd)/run.log"; read -rp "Naciśnij Enter, aby zamknąć..."' EXIT
++ git status -sb
++ git switch -c feat/act-stub
++ git switch feat/act-stub
++ mkdir -p app/routers
++ cat
++ touch app/__init__.py app/routers/__init__.py
++ '[' -f app/app.py ']'
++ python -
++ python3 -m venv .venv
++ . .venv/bin/activate
+++ deactivate nondestructive
+++ '[' -n '' ']'
+++ '[' -n '' ']'
+++ hash -r
+++ '[' -n '' ']'
+++ unset VIRTUAL_ENV
+++ unset VIRTUAL_ENV_PROMPT
+++ '[' '!' nondestructive = nondestructive ']'
+++ '[' linux-gnu = cygwin ']'
+++ '[' linux-gnu = msys ']'
+++ export VIRTUAL_ENV=/home/eryk-juraszczyk/workspace/AgentCortana-App/.venv
+++ VIRTUAL_ENV=/home/eryk-juraszczyk/workspace/AgentCortana-App/.venv
+++ _OLD_VIRTUAL_PATH=/home/eryk-juraszczyk/workspace/AgentCortana-App/.venv/bin:/home/eryk-juraszczyk/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/eryk-juraszczyk/.local/bin:/home/eryk-juraszczyk/.local/bin
+++ PATH=/home/eryk-juraszczyk/workspace/AgentCortana-App/.venv/bin:/home/eryk-juraszczyk/workspace/AgentCortana-App/.venv/bin:/home/eryk-juraszczyk/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/eryk-juraszczyk/.local/bin:/home/eryk-juraszczyk/.local/bin
+++ export PATH
+++ '[' -n '' ']'
+++ '[' -z '' ']'
+++ _OLD_VIRTUAL_PS1=
+++ PS1='(.venv) '
+++ export PS1
+++ VIRTUAL_ENV_PROMPT='(.venv) '
+++ export VIRTUAL_ENV_PROMPT
+++ hash -r
++ python -m pip install -q --upgrade pip
++ '[' -f requirements-dev.txt ']'
++ pip -q install -r requirements-dev.txt
+++ pwd
++ export PYTHONPATH=/home/eryk-juraszczyk/workspace/AgentCortana-App
++ PYTHONPATH=/home/eryk-juraszczyk/workspace/AgentCortana-App
++ mkdir -p tests
++ cat
++ python -m pytest -q
++ echo '❌ Testy nie przeszły (szczegóły powyżej i w run.log)'
++ git add -A
++ git commit -m 'feat: /act stub (POST) + tests'
++ git remote get-url origin
++ git push -u origin feat/act-stub
++ echo
+++ pwd
++ echo '📜 Log: /home/eryk-juraszczyk/workspace/AgentCortana-App/run.log'
++ read -rp 'Naciśnij Enter, aby zamknąć...'
