@@ -1,9 +1,10 @@
-import sys
-from importlib.util import module_from_spec, spec_from_file_location
+from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "agent-local" / "agent_app" / "app" / "main.py"
+
 if not MAIN.exists():
     raise ImportError(f"Cannot find FastAPI app file at {MAIN}")
 
@@ -14,4 +15,6 @@ if spec is None or spec.loader is None:
 module = module_from_spec(spec)
 sys.modules["agent_local_app_main"] = module
 spec.loader.exec_module(module)  # type: ignore[attr-defined]
-app = module.app
+
+# Udostępnij FastAPI app
+app = module.app  # noqa: F401

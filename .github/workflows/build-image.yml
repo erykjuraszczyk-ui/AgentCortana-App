@@ -26,16 +26,18 @@ jobs:
 
       - name: Install deps and run tests
         run: |
+          set -e
           python -m venv .venv
           . .venv/bin/activate
-          python -m pip install -U pip
-          if [ -f agent-local/requirements-test.txt ]; then
-            pip install -r agent-local/requirements-test.txt
-          elif [ -f agent-local/requirements.txt ]; then
-            pip install -r agent-local/requirements.txt
-          else
-            pip install fastapi uvicorn httpx pydantic pytest anyio starlette
-          fi
+          python -m pip install -U pip setuptools wheel
+          # opcjonalne pliki wymagań, jeśli istnieją
+          if [ -f agent-local/requirements-test.txt ]; then pip install -r agent-local/requirements-test.txt; fi
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+          if [ -f agent-local/requirements.txt ]; then pip install -r agent-local/requirements.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # twardy fallback pakietów potrzebnych do testów
+          pip install pytest pytest-asyncio anyio httpx fastapi starlette uvicorn pydantic
+          echo "==== pip freeze (head) ===="; pip freeze | sed -n '1,120p'
           PYTHONPATH=agent-local pytest -q
 
       # ---- BUILD & PUSH ----

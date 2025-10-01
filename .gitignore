@@ -17,3 +17,7 @@ build/
 /agent-local/agent_app/
 /tę jobów i ich ID (zobaczymy nazwę "tests")
 /tę jobów i ich ID (zobaczymy nazwę "tests")
+
+# allow local agent app for tests
+!agent-local/agent_app/
+!agent-local/agent_app/**
