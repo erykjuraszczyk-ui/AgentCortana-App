@@ -22,7 +22,15 @@ def _extract_text(payload: dict[str, Any]) -> str | None:
 
 @router.post("/act")
 async def act(request: Request):
-    """Zwraca status=accepted + task_id(UUID) + timestamp + accepted_at(ISO8601) + echo.input; pusta treść -> 400."""
+    """Zwraca:
+    - status="accepted"
+    - task_id (UUID)
+    - timestamp
+    - accepted_at (ISO8601)
+    - echo.input
+
+    Pusta treść -> 400.
+    """
     try:
         data = await request.json()
     except Exception:
