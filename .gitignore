@@ -21,3 +21,7 @@ build/
 # allow local agent app for tests
 !agent-local/agent_app/
 !agent-local/agent_app/**
+
+# local artifacts
+agent-local/agent_app/app/__pycache__/
+agent-local/agent_app/app/*.bak
