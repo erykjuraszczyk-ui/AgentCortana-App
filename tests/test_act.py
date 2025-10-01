@@ -1,6 +1,5 @@
 from __future__ import annotations
-import httpx
-import pytest
+import httpx, pytest
 from httpx import ASGITransport
 from app.app import app
 

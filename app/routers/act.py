@@ -7,7 +7,7 @@ router = APIRouter(tags=["act"])
 
 class ActRequest(BaseModel):
     input: str = Field(..., description="User input")
-    mode: Optional[Literal["sync", "stream"]] = "sync"
+    mode: Optional[Literal]["sync", "stream"] | None = "sync"
 
 class ActResponse(BaseModel):
     status: Literal["accepted", "unsupported"]
