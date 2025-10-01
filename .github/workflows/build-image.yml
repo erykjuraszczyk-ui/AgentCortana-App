@@ -12,6 +12,9 @@ permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE_REPO: ghcr.io/erykjuraszczyk-ui/agentcortana-app
+
 jobs:
   test_and_build:
     runs-on: ubuntu-latest
@@ -53,14 +56,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ env.IMAGE_REPO }}
           tags: |
             type=semver,pattern={{version}}
-            type=ref,event=branch
+            type=ref,event=branch,enable=true
+            type=sha,format=short
             type=raw,value=latest,enable={{is_default_branch}}
-          labels: |
-            org.opencontainers.image.title=AgentCortana-App
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+
+      - name: Print computed tags (debug)
+        run: |
+          echo "TAGS:"
+          echo "${{ steps.meta.outputs.tags }}"
+          echo "LABELS:"
+          echo "${{ steps.meta.outputs.labels }}"
+          test -n "${{ steps.meta.outputs.tags }}" || (echo "No tags generated!" && exit 1)
 
       - name: Build and push
         uses: docker/build-push-action@v6
