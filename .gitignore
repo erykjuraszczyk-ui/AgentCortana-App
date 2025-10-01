@@ -13,3 +13,6 @@ build/
 .vscode/
 .idea/
 .DS_Store
+
+# local logs
+run.log
