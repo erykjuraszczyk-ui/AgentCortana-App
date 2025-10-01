@@ -11,10 +11,10 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-test = [
-  "pytest>=7.4",
-  "pytest-cov>=4.1"
-]
+test = ["pytest>=7.4", "pytest-cov>=4.1"]
 
-# Uwaga: brak sekcji [tool.setuptools.package-dir] i packages.find/where=src
-# -> flat layout (pakiety odkrywane z root)
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
