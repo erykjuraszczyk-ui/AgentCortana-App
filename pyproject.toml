@@ -10,14 +10,11 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
-# extras: pip install -e ".[test]"
 [project.optional-dependencies]
 test = [
   "pytest>=7.4",
   "pytest-cov>=4.1"
 ]
 
-[tool.setuptools]
-package-dir = {"" = "src"}  # jeśli masz układ src/
-[tool.setuptools.packages.find]
-where = ["src"]
+# Uwaga: brak sekcji [tool.setuptools.package-dir] i packages.find/where=src
+# -> flat layout (pakiety odkrywane z root)
