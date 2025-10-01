@@ -30,12 +30,10 @@ jobs:
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install -U pip setuptools wheel
-          # opcjonalne requirements-y, jeśli istnieją
           [ -f agent-local/requirements-test.txt ] && pip install -r agent-local/requirements-test.txt || true
           [ -f requirements-test.txt ] && pip install -r requirements-test.txt || true
           [ -f agent-local/requirements.txt ] && pip install -r agent-local/requirements.txt || true
           [ -f requirements.txt ] && pip install -r requirements.txt || true
-          # twardy fallback
           pip install pytest pytest-asyncio anyio httpx fastapi starlette uvicorn pydantic
           PYTHONPATH=agent-local pytest -q
 
@@ -64,8 +62,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./agent-local
-          file: ./agent-local/Dockerfile
+          context: ./agent-local/agent_app
+          file: ./agent-local/agent_app/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
