@@ -1,16 +1,8 @@
-import os
-import time
-import uuid
+# imports na górze pliku
 from typing import Any  # zamiast Dict
 
-import requests
 from fastapi import FastAPI, HTTPException
-from minio import Minio
-from minio.error import S3Error
 from pydantic import BaseModel, Field
-
-# imports na górze pliku
-
 
 # ... reszta importów ...
 
@@ -115,10 +107,20 @@ def remember(req: RememberReq) -> dict[str, Any]:
     _ensure_bucket(m, MINIO_BUCKET)
 
     obj = f"mem/{int(time.time())}_{uuid.uuid4().hex}.txt"
-    # removed unused: data = req.text.encode('utf-8')
+    data = req.text.encode("utf-8")
     # … reszta jak było …
     return {"ok": True, "object": obj}
 
+
+import os
+import time
+import uuid
+from typing import Any
+
+import requests
+from minio import Minio
+from minio.error import S3Error
+from pydantic import BaseModel
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://127.0.0.1:8000/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
@@ -182,7 +184,97 @@ def embed(texts: list[str]) -> list[list[float]]:
             return [data["vector"]]
         raise ValueError("Unexpected embeddings response")
     except requests.RequestException as e:
-        raise HTTPException(status_code=502, detail=f"Embeddings error: {e}") from e
+        raise HTTPException(status_code=502, detail=f"Embeddings error: {e}")
+
+
+def qdrant_upsert(vec, payload):
+    _qdrant_create()
+    body = {"points": [{"id": uuid.uuid4().hex, "vector": vec, "payload": payload}]}
+    r = requests.put(f"{QDRANT_URL}/collections/{QDRANT_COLLECTION}/points", json=body, timeout=20)
+    if r.status_code >= 300:
+        raise HTTPException(
+            status_code=502, detail=f"Qdrant upsert failed: {r.status_code} {r.text}"
+        )
+
+
+def qdrant_search(vec, limit=5):
+    body = {"vector": vec, "limit": limit, "with_payload": True}
+    r = requests.post(
+        f"{QDRANT_URL}/collections/{QDRANT_COLLECTION}/points/search", json=body, timeout=20
+    )
+    if r.status_code >= 300:
+        raise HTTPException(
+            status_code=502, detail=f"Qdrant search failed: {r.status_code} {r.text}"
+        )
+    return r.json() or []
+
+
+def chat(messages, temperature=0.2, max_tokens=512):
+    headers = {"Content-Type": "application/json"}
+    if LLM_API_KEY:
+        headers["Authorization"] = f"Bearer {LLM_API_KEY}"
+    payload = {
+        "model": "auto",
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+    r = requests.post(
+        f"{LLM_BASE_URL}/chat/completions", headers=headers, json=payload, timeout=120
+    )
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
+
+
+class RememberReq(BaseModel):
+    text: str
+    metadata: dict[str, Any] = {}
+
+
+class ActReq(BaseModel):
+    query: str
+    top_k: int = 5
+    temperature: float = 0.2
+    max_tokens: int = 512
+
+
+@app.get("/health")
+def health():
+    st = {}
+    try:
+        requests.get(f"{QDRANT_URL}/collections", timeout=3).raise_for_status()
+        st["qdrant"] = "ok"
+    except Exception as e:
+        st["qdrant"] = f"err:{e}"
+    try:
+        requests.get(f"{LLM_BASE_URL}/models", timeout=3).raise_for_status()
+        st["llm"] = "ok"
+    except Exception as e:
+        st["llm"] = f"err:{e}"
+    try:
+        requests.post(EMBEDDINGS_URL, json={"inputs": ["ping"]}, timeout=5).raise_for_status()
+        st["embeddings"] = "ok"
+    except Exception as e:
+        st["embeddings"] = f"err:{e}"
+    try:
+        m = _minio_client()
+        _ensure_bucket(m, MINIO_BUCKET)
+        st["minio"] = "ok"
+    except Exception as e:
+        st["minio"] = f"err:{e}"
+
+
+def remember(req: RememberReq):
+    m = _minio_client()
+    _ensure_bucket(m, MINIO_BUCKET)
+    obj = f"mem/{int(time.time())}_{uuid.uuid4().hex}.txt"
+    data = req.text.encode("utf-8")
+    m.put_object(MINIO_BUCKET, obj, data=data, length=len(data), content_type="text/plain")
+    vec = embed([req.text])[0]
+    qdrant_upsert(
+        vec, {"minio_object": obj, "metadata": req.metadata, "text_preview": req.text[:500]}
+    )
+    return {"ok": True, "object": obj}
 
 
 @app.post("/act")
