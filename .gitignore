@@ -1,8 +1,16 @@
 .venv/
 __pycache__/
 *.pyc
+*.pyo
 *.log
 .DS_Store
 .idea/
 .vscode/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+.env
 agent-local/data/
