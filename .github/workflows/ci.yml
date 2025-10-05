@@ -12,6 +12,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')   # tylko na tagi vX.Y.Z
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write        # wymagane do pushowania do GHCR
+    steps:
+      - name: Checkout (pinned)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build & push (GHCR)
+        # w repo bez polityki "pin to SHA" możesz użyć @v6;
+        # jeśli masz politykę jak w innym repo, przypnij do pełnego SHA z Marketplace.
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/agentcortana-app:${{ env.APP_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/agentcortana-app:sha-${{ github.sha }}
+
   test:
     runs-on: ubuntu-latest
     steps:
